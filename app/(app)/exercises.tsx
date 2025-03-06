@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Image } from 'react-native';
 import { useState } from 'react';
 
@@ -8,6 +8,10 @@ const CATEGORIES = ['All', 'Core', 'Arms', 'Legs', 'Back', 'Full Body'];
 export default function Exercises() {
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const handleExercisePress = () => {
+    Alert.alert('Coming Soon', 'Exercise details will be available in the next update');
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -69,7 +73,11 @@ export default function Exercises() {
 
       <View style={styles.exercisesList}>
         {[1, 2, 3, 4, 5].map((item) => (
-          <Pressable key={item} style={styles.exerciseCard}>
+          <Pressable 
+            key={item} 
+            style={styles.exerciseCard}
+            onPress={handleExercisePress}
+          >
             <Image
               source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
               style={styles.exerciseImage}

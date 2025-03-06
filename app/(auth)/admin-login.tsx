@@ -1,37 +1,42 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Alert,
-} from 'react-native';
 import { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../utils/supabase';
 
-export default function Login() {
+export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
       setLoading(true);
+      setError('');
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       });
 
-      if (error) throw error;
+      if (signInError) throw signInError;
 
-      router.replace('/(app)');
+      // Check if user is admin
+      const { data: adminData, error: adminError } = await supabase
+        .from('users')
+        .select('is_admin')
+        .eq('id', user?.id)
+        .single();
+
+      if (adminError) throw adminError;
+
+      if (!adminData?.is_admin) {
+        throw new Error('Unauthorized access');
+      }
+
+      router.replace('/admin');
     } catch (err) {
-      Alert.alert(
-        'Error',
-        err instanceof Error ? err.message : 'Failed to login'
-      );
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -39,7 +44,12 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Admin Login</Text>
+      
+      {error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : null}
+
       <View style={styles.form}>
         <TextInput
           style={styles.input}
@@ -56,7 +66,7 @@ export default function Login() {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <Pressable
+        <Pressable 
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={loading}
@@ -80,6 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 32,
+    color: '#0f172a',
   },
   form: {
     gap: 16,
@@ -92,7 +103,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#000',
+    backgroundColor: '#0f172a',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -105,5 +116,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  error: {
+    color: '#ef4444',
+    marginBottom: 16,
+    fontSize: 14,
   },
 });

@@ -1,8 +1,34 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { supabase } from '../../utils/supabase';
 
 export default function Profile() {
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.replace('/');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to log out');
+    }
+  };
+
+  const handleNavigation = (screen: string) => {
+    switch (screen) {
+      case 'settings':
+        Alert.alert('Coming Soon', 'Settings will be available in the next update');
+        break;
+      case 'payment':
+        Alert.alert('Coming Soon', 'Payment methods will be available in the next update');
+        break;
+      case 'help':
+        Alert.alert('Coming Soon', 'Help & Support will be available in the next update');
+        break;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -30,26 +56,26 @@ export default function Profile() {
       </View>
 
       <View style={styles.menu}>
-        <Pressable style={styles.menuItem}>
+        <Pressable style={styles.menuItem} onPress={() => handleNavigation('settings')}>
           <Ionicons name="settings-outline" size={24} color="#0f172a" />
           <Text style={styles.menuText}>Settings</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
-        <Pressable style={styles.menuItem}>
+        <Pressable style={styles.menuItem} onPress={() => handleNavigation('payment')}>
           <Ionicons name="card-outline" size={24} color="#0f172a" />
           <Text style={styles.menuText}>Payment Methods</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
-        <Pressable style={styles.menuItem}>
+        <Pressable style={styles.menuItem} onPress={() => handleNavigation('help')}>
           <Ionicons name="help-circle-outline" size={24} color="#0f172a" />
           <Text style={styles.menuText}>Help & Support</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
       </View>
 
-      <Pressable style={styles.logoutButton}>
+      <Pressable style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Log Out</Text>
       </Pressable>
     </View>

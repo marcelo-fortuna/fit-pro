@@ -10,27 +10,29 @@ export default function Welcome() {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
+        source={{
+          uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800',
+        }}
         style={styles.backgroundImage}
       />
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.8)']}
         style={styles.gradient}
       />
-      
+
       <View style={styles.content}>
         <Text style={styles.title}>{t('welcome.title')}</Text>
         <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
 
         <View style={styles.buttonContainer}>
-          <Pressable 
+          <Pressable
             style={[styles.button, styles.primaryButton]}
             onPress={() => router.push('/login')}
           >
             <Text style={styles.buttonText}>{t('welcome.existingUser')}</Text>
           </Pressable>
 
-          <Pressable 
+          <Pressable
             style={[styles.button, styles.secondaryButton]}
             onPress={() => router.push('/quiz')}
           >
@@ -47,6 +49,9 @@ export default function Welcome() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
     backgroundColor: '#000',
   },
   backgroundImage: {
@@ -57,51 +62,50 @@ const styles = StyleSheet.create({
   },
   gradient: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '70%',
+    width: '100%',
+    height: '100%',
   },
   content: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    padding: 24,
-    paddingBottom: 48,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#fff',
-    opacity: 0.8,
-    marginBottom: 48,
-  },
-  buttonContainer: {
-    gap: 16,
-  },
-  button: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    width: '80%',
     alignItems: 'center',
   },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#ddd',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  buttonContainer: {
+    width: '100%',
+    gap: 12,
+  },
+  button: {
+    width: '100%',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   primaryButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1DB954',
   },
   secondaryButton: {
-    borderWidth: 1,
-    borderColor: '#fff',
+    borderWidth: 2,
+    borderColor: '#1DB954',
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: 'bold',
+    color: '#fff',
   },
   secondaryButtonText: {
-    color: '#fff',
+    color: '#1DB954',
   },
 });
