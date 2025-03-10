@@ -40,7 +40,8 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.19.13",
     "stripe-client": "^1.1.5",
-    "zustand": "^4.5.0"
+    "zustand": "^4.5.0",
+    "expo-dev-client": "~5.0.12"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

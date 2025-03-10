@@ -50,7 +50,7 @@ export default function Login() {
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1579126038374-6064e9370f0f?w=800' }}
+            source={require('../../assets/images/fitpro-logo-letter-nobg.png')}
             style={styles.logo}
           />
           <Text style={styles.logoText}>Fit Pro</Text>
