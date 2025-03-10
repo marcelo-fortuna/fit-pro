@@ -45,6 +45,33 @@ const i18n = new I18n({
       completeRegister: 'Complete registration',
       savingCompleteRegister: 'Saving...',
     },
+    profile: {
+      title: 'Profile',
+      currentPlan: 'Current Plan',
+      premiumMonthly: 'Premium Monthly',
+      expiresOn: 'Expires on',
+      settings: 'Settings',
+      paymentMethods: 'Payment Methods',
+      helpSupport: 'Help & Support',
+      logout: 'Log Out',
+      yearsOld: 'years old',
+      updatePhoto: 'Update Profile Photo',
+      chooseFromGallery: 'Choose from Gallery',
+      takePhoto: 'Take a Photo',
+    },
+    quiz: {
+      questions: {
+        1: {
+          text: 'What is your main goal with Pilates?',
+          options: ['Flexibility', 'Strength', 'Rehabilitation', 'Overall Fitness']
+        },
+        2: {
+          text: 'How many times per week do you plan to practice?',
+          options: ['1-2 times', '3-4 times', '5-6 times', 'Every day']
+        },
+        // Add all other questions here
+      }
+    }
   },
   pt: {
     err: {
@@ -89,6 +116,68 @@ const i18n = new I18n({
       completeRegister: 'Concluir cadastro',
       savingCompleteRegister: 'Salvando...',
     },
+    profile: {
+      title: 'Perfil',
+      currentPlan: 'Plano Atual',
+      premiumMonthly: 'Premium Mensal',
+      expiresOn: 'Expira em',
+      settings: 'Configurações',
+      paymentMethods: 'Métodos de Pagamento',
+      helpSupport: 'Ajuda & Suporte',
+      logout: 'Sair',
+      yearsOld: 'anos',
+      updatePhoto: 'Atualizar Foto de Perfil',
+      chooseFromGallery: 'Escolher da Galeria',
+      takePhoto: 'Tirar Foto',
+    },
+    quiz: {
+      questions: {
+        1: {
+          text: 'Qual é o seu principal objetivo?',
+          options: ['Perder Peso', 'Aumentar a força muscular', 'Desenvolver flexibilidade', 'Reduzir estresse e a ansiedade', 'Melhorar a postura']
+        },
+        2: {
+          text: 'Como você descreveria o seu físico?',
+          options: ['Magro', 'Médio porte', 'Peso ideal', 'Acima do peso']
+        },
+        3: {
+          text: 'Qual é o "corpo dos seus sonhos"?',
+          options: ['Magro', 'Tonificado', 'Curvilínea', 'Apenas um pouco mais magro']
+        },
+        4: {
+          text: 'Quais são suas zonas-alvo?',
+          options: ['Barriga', 'Peito', 'Bunda', 'Pernas']
+        },
+        5: {
+          text: 'O que melhor descreve sua experiência com fitness?',
+          options: ['Tenho dificuldade em ganhar músculos ou gordura corporal', 'Eu ganho e perco peso sem esforço', 'Eu ganho peso facilmente, mas tenho dificuldade em perdê-lo']
+        },
+        6: {
+          text: 'Há quanto tempo você estava na melhor forma da sua vida?',
+          options: ['Menos de um ano atrás', '1 a 2 anos atrás', 'Mais de 3 anos atrás', 'Nunca']
+        },
+        7: {
+          text: 'Você já tentou exercícios de pilates na parede antes?',
+          options: ['Sim, eu pratico regularmente', 'Sim, eu tentei', 'Não, eu nunca experimentei']
+        },
+        8: {
+          text: 'Quão flexível você é?',
+          options: ['Bastante flexível', 'Apenas começando', 'Não sou tanto assim', 'Não tenho certeza']
+        },
+        9: {
+          text: 'Com que frequência você se exercita?',
+          options: ['Quase todos os dias', 'Várias vezes por semana', 'Várias vezes por mês', 'Nunca']
+        },
+        10: {
+          text: 'Você fica sem fôlego depois de subir um lance de escadas?',
+          options: ['Fico tão sem fôlego que não consigo falar', 'Fico um pouco sem fôlego, mas consigo falar', 'Fico bem depois de um lance de escadas', 'Eu posso subir facilmente alguns lances de escada']
+        },
+        11: {
+          text: 'Com que frequência você sai para caminhar?',
+          options: ['Quase todos os dias', '3-4 vezes por semana', '1-2 vezes por semana', 'Mais de uma vez por mês', 'Não costumo sair para caminhar']
+        },
+      }
+    }
   },
   es: {
     err: {
@@ -131,8 +220,35 @@ const i18n = new I18n({
       lastName: 'Apellido',
       birthDate: 'Fecha de Nacimiento (DD/MM/AAAA)',
       completeRegister: 'Completar registro',
-      savingCompleteRegister: 'Ahorrando...',
+      savingCompleteRegister: 'Guardando...',
     },
+    profile: {
+      title: 'Perfil',
+      currentPlan: 'Plan Actual',
+      premiumMonthly: 'Premium Mensual',
+      expiresOn: 'Expira el',
+      settings: 'Configuración',
+      paymentMethods: 'Métodos de Pago',
+      helpSupport: 'Ayuda y Soporte',
+      logout: 'Cerrar Sesión',
+      yearsOld: 'años',
+      updatePhoto: 'Actualizar Foto de Perfil',
+      chooseFromGallery: 'Elegir de la Galería',
+      takePhoto: 'Tomar Foto',
+    },
+    quiz: {
+      questions: {
+        1: {
+          text: '¿Cuál es tu objetivo principal con Pilates?',
+          options: ['Flexibilidad', 'Fuerza', 'Rehabilitación', 'Acondicionamiento General']
+        },
+        2: {
+          text: '¿Cuántas veces por semana planeas practicar?',
+          options: ['1-2 veces', '3-4 veces', '5-6 veces', 'Todos los días']
+        },
+        // Add all other questions here
+      }
+    }
   },
 });
 

@@ -1,8 +1,10 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '../../utils/supabase';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { View } from 'react-native';
 
 export default function AppLayout() {
   useEffect(() => {
@@ -17,7 +19,12 @@ export default function AppLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerRight: () => (
+          <View style={{ marginRight: 16 }}>
+            <LanguageSwitcher />
+          </View>
+        ),
         tabBarStyle: {
           borderTopWidth: 0,
           elevation: 0,
@@ -30,7 +37,7 @@ export default function AppLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ size, color }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Icon name="home" size={size} color={color} />
           ),
         }}
       />
@@ -39,7 +46,7 @@ export default function AppLayout() {
         options={{
           title: 'Exercises',
           tabBarIcon: ({ size, color }) => (
-            <Ionicons name="fitness" size={size} color={color} />
+            <Icon name="fitness" size={size} color={color} />
           ),
         }}
       />
@@ -48,7 +55,7 @@ export default function AppLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ size, color }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Icon name="person" size={size} color={color} />
           ),
         }}
       />

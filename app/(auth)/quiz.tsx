@@ -12,38 +12,6 @@ import { useTranslation } from '../../utils/i18n';
 import React, { useState } from 'react';
 import { supabase } from '../../utils/supabase';
 
-const questions = [
-  { id: 1, text: 'Qual é o seu objetivo principal com o Pilates?' },
-  { id: 2, text: 'Quantas vezes por semana você pretende praticar?' },
-  { id: 3, text: 'Você já praticou Pilates antes?' },
-  { id: 4, text: 'Você tem alguma lesão ou condição médica?' },
-  { id: 5, text: 'Qual é seu nível de atividade física atual?' },
-  { id: 6, text: 'Você tem problemas de coluna?' },
-  { id: 7, text: 'Qual é sua principal área de foco?' },
-  { id: 8, text: 'Você está grávida ou teve bebê recentemente?' },
-  { id: 9, text: 'Tem alguma restrição de movimento?' },
-  { id: 10, text: 'Pratica outros exercícios além do Pilates?' },
-  { id: 11, text: 'Tem preferência por exercícios matinais ou noturnos?' },
-  { id: 12, text: 'Qual sua disponibilidade de tempo para prática?' },
-  { id: 13, text: 'Tem equipamentos de Pilates em casa?' },
-  { id: 14, text: 'Prefere exercícios em pé ou no solo?' },
-  { id: 15, text: 'Tem experiência com exercícios respiratórios?' },
-  { id: 16, text: 'Qual sua tolerância a exercícios intensos?' },
-  { id: 17, text: 'Tem problemas de equilíbrio?' },
-  { id: 18, text: 'Prefere exercícios individuais ou em grupo?' },
-  { id: 19, text: 'Tem algum objetivo específico de flexibilidade?' },
-  { id: 20, text: 'Como é sua postura no dia a dia?' },
-  { id: 21, text: 'Tem histórico de cirurgias?' },
-  { id: 22, text: 'Qual sua expectativa de progresso?' },
-  { id: 23, text: 'Tem alguma área específica de tensão?' },
-  { id: 24, text: 'Como é seu nível de stress diário?' },
-  { id: 25, text: 'Tem problemas de sono?' },
-  { id: 26, text: 'Pratica técnicas de relaxamento?' },
-  { id: 27, text: 'Tem objetivos de fortalecimento específicos?' },
-  { id: 28, text: 'Como é sua rotina diária?' },
-  { id: 29, text: 'Tem alguma preocupação específica com exercícios?' },
-];
-
 export default function Quiz() {
   const { t } = useTranslation();
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -53,12 +21,16 @@ export default function Quiz() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const questions = Object.keys(t('quiz.questions', { returnObjects: true })); // Obtém todas as chaves das perguntas
+  const totalQuestions = questions.length;
+
   const handleAnswer = (answer: string) => {
     setAnswers((prev) => ({
       ...prev,
-      [questions[currentQuestion].id]: answer,
+      [questions[currentQuestion]]: answer,
     }));
-    if (currentQuestion < questions.length - 1) {
+
+    if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setQuizCompleted(true);
@@ -86,13 +58,10 @@ export default function Quiz() {
         }
       );
 
-      console.log('signUpError ' + signUpError);
-
       if (signUpError) throw signUpError;
-
       if (!authData.user) throw new Error('No user data returned');
 
-      // Save user profile
+      // Salvar perfil do usuário
       const { error: profileError } = await supabase.from('users').insert([
         {
           id: authData.user.id,
@@ -100,12 +69,9 @@ export default function Quiz() {
           quiz_completed: true,
         },
       ]);
-
-      console.log('profileError ' + profileError);
-
       if (profileError) throw profileError;
 
-      // Save quiz responses
+      // Salvar respostas do quiz
       const { error: quizError } = await supabase
         .from('quiz_responses')
         .insert([
@@ -114,11 +80,9 @@ export default function Quiz() {
             responses: answers,
           },
         ]);
-
-      console.log('quizError ' + quizError);
       if (quizError) throw quizError;
 
-      // Redirect to complete profile
+      // Redirecionar para completar perfil
       router.replace({
         pathname: '/complete-profile',
         params: { userId: authData.user.id },
@@ -142,35 +106,35 @@ export default function Quiz() {
       {!quizCompleted ? (
         <View style={styles.quizContainer}>
           <Text style={styles.progressText}>
-            {currentQuestion + 1} de {questions.length}
+            {currentQuestion + 1} de {totalQuestions}
           </Text>
           <View style={styles.progressBar}>
             <View
               style={[
                 styles.progressFill,
                 {
-                  width: `${((currentQuestion + 1) / questions.length) * 100}%`,
+                  width: `${((currentQuestion + 1) / totalQuestions) * 100}%`,
                 },
               ]}
             />
           </View>
 
           <Text style={styles.questionText}>
-            {questions[currentQuestion].text}
+            {t(`quiz.questions.${questions[currentQuestion]}.text`)}
           </Text>
 
           <View style={styles.optionsContainer}>
-            {['Sim, muito', 'Sim, um pouco', 'Não muito', 'Não, nada'].map(
-              (option) => (
-                <Pressable
-                  key={option}
-                  style={styles.optionButton}
-                  onPress={() => handleAnswer(option)}
-                >
-                  <Text style={styles.optionText}>{option}</Text>
-                </Pressable>
-              )
-            )}
+            {t(`quiz.questions.${questions[currentQuestion]}.options`, {
+              returnObjects: true,
+            }).map((option: string) => (
+              <Pressable
+                key={option}
+                style={styles.optionButton}
+                onPress={() => handleAnswer(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </Pressable>
+            ))}
           </View>
         </View>
       ) : (
@@ -220,7 +184,6 @@ export default function Quiz() {
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

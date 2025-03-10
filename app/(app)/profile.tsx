@@ -1,10 +1,117 @@
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, ScrollView, Modal } from 'react-native';
 import { Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { supabase } from '../../utils/supabase';
+import { useEffect, useState } from 'react';
+import { useTranslation } from '../../utils/i18n';
+import * as ImagePicker from 'expo-image-picker';
+
+type UserProfile = {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  birth_date: string | null;
+  subscription_status: string;
+  subscription_end_date: string | null;
+  profile_image_url: string | null;
+};
 
 export default function Profile() {
+  const { t } = useTranslation();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [showImageOptions, setShowImageOptions] = useState(false);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setUserProfile(profile);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImagePick = async (useCamera: boolean) => {
+    try {
+      setShowImageOptions(false);
+      setUploadingImage(true);
+
+      let result;
+      if (useCamera) {
+        result = await ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.7,
+        });
+      }
+
+      if (!result.canceled && result.assets[0]) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No user found');
+
+        // Upload image to Supabase Storage
+        const file = result.assets[0];
+        const fileExt = file.uri.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        const filePath = `profiles/${fileName}`;
+
+        const response = await fetch(file.uri);
+        const blob = await response.blob();
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, blob);
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        // Update user profile
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ profile_image_url: publicUrl })
+          .eq('id', user.id);
+
+        if (updateError) throw updateError;
+
+        // Refresh profile
+        fetchUserProfile();
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update profile picture');
+      console.error(err);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -15,70 +122,130 @@ export default function Profile() {
     }
   };
 
-  const handleNavigation = (screen: string) => {
-    switch (screen) {
-      case 'settings':
-        Alert.alert('Coming Soon', 'Settings will be available in the next update');
-        break;
-      case 'payment':
-        Alert.alert('Coming Soon', 'Payment methods will be available in the next update');
-        break;
-      case 'help':
-        Alert.alert('Coming Soon', 'Help & Support will be available in the next update');
-        break;
+  const calculateAge = (birthDate: string) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
     }
+
+    return age;
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>{t('profile.title')}</Text>
       </View>
 
       <View style={styles.profile}>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' }}
-          style={styles.avatar}
-        />
-        <Text style={styles.name}>Sarah Johnson</Text>
-        <Text style={styles.email}>sarah@example.com</Text>
+        <Pressable
+          onPress={() => setShowImageOptions(true)}
+          style={styles.avatarContainer}
+        >
+          <Image
+            source={{
+              uri: userProfile?.profile_image_url ||
+                'https://cdna.artstation.com/p/assets/images/images/084/124/300/large/matthew-blank-profile-photo-3.jpg',
+            }}
+            style={styles.avatar}
+          />
+          <View style={styles.editOverlay}>
+            <Ionicons name="camera" size={24} color="white" />
+          </View>
+        </Pressable>
+        <Text style={styles.name}>
+          {userProfile?.first_name}{userProfile?.last_name}
+        </Text>
+        <Text style={styles.email}>{userProfile?.email}</Text>
+        {userProfile?.birth_date && (
+          <Text style={styles.age}>
+            {calculateAge(userProfile.birth_date)} {t('profile.yearsOld')}
+          </Text>
+        )}
       </View>
 
       <View style={styles.subscription}>
-        <Text style={styles.subscriptionTitle}>Current Plan</Text>
+        <Text style={styles.subscriptionTitle}>{t('profile.currentPlan')}</Text>
         <View style={styles.planCard}>
           <View style={styles.planInfo}>
-            <Text style={styles.planName}>Premium Monthly</Text>
+            <Text style={styles.planName}>{t('profile.premiumMonthly')}</Text>
             <Text style={styles.planPrice}>$19.99/month</Text>
           </View>
-          <Text style={styles.planExpiry}>Expires on Feb 28, 2024</Text>
+          <Text style={styles.planExpiry}>
+            {t('profile.expiresOn')}{' '}
+            {userProfile?.subscription_end_date
+              ? new Date(userProfile.subscription_end_date).toLocaleDateString()
+              : 'N/A'}
+          </Text>
         </View>
       </View>
 
       <View style={styles.menu}>
-        <Pressable style={styles.menuItem} onPress={() => handleNavigation('settings')}>
-          <Ionicons name="settings-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>Settings</Text>
+        <Pressable style={styles.menuItem}>
+          <Ionicons name='settings-outline' size={24} color="#0f172a" />
+          <Text style={styles.menuText}>{t('profile.settings')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
-        <Pressable style={styles.menuItem} onPress={() => handleNavigation('payment')}>
+        <Pressable style={styles.menuItem}>
           <Ionicons name="card-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>Payment Methods</Text>
+          <Text style={styles.menuText}>{t('profile.paymentMethods')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
-        <Pressable style={styles.menuItem} onPress={() => handleNavigation('help')}>
+        <Pressable style={styles.menuItem}>
           <Ionicons name="help-circle-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>Help & Support</Text>
+          <Text style={styles.menuText}>{t('profile.helpSupport')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
       </View>
 
       <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log Out</Text>
+        <Text style={styles.logoutText}>{t('profile.logout')}</Text>
       </Pressable>
-    </View>
+
+      <Modal
+        visible={showImageOptions}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowImageOptions(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowImageOptions(false)}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{t('profile.updatePhoto')}</Text>
+            <Pressable
+              style={styles.modalOption}
+              onPress={() => handleImagePick(false)}
+            >
+              <Ionicons name="images-outline" size={24} color="#0f172a" />
+              <Text style={styles.modalOptionText}>{t('profile.chooseFromGallery')}</Text>
+            </Pressable>
+            <Pressable
+              style={styles.modalOption}
+              onPress={() => handleImagePick(true)}
+            >
+              <Ionicons name="camera-outline" size={24} color="#0f172a" />
+              <Text style={styles.modalOptionText}>{t('profile.takePhoto')}</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
+    </ScrollView>
   );
 }
 
@@ -89,7 +256,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 24,
-    paddingTop: 60,
+    paddingTop: 20,
   },
   title: {
     fontSize: 28,
@@ -100,11 +267,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 16,
+  },
+  editOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#0f766e',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   name: {
     fontSize: 24,
@@ -112,6 +293,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   email: {
+    fontSize: 16,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  age: {
     fontSize: 16,
     color: '#64748b',
   },
@@ -174,5 +360,36 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: '#0f172a',
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#f8fafc',
+    marginBottom: 12,
+  },
+  modalOptionText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#0f172a',
   },
 });
