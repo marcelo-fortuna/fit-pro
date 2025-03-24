@@ -26,15 +26,29 @@ export default function Login() {
 
     try {
       setLoading(true);
-
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      if (error) throw error;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const { data: profile } = await supabase
+        .from('users')
+        .select('first_name, last_name, birth_date, profile_completed')
+        .eq('id', session?.user.id)
+        .single();
 
       if (error) throw error;
 
-      router.replace('/(app)');
+      if (!profile?.profile_completed) {
+        router.replace({
+          pathname: '/complete-profile',
+          params: { userId: session?.user.id }
+        });
+      } else {
+        router.replace('/(app)');
+      }
     } catch (err) {
       Alert.alert(
         'Erro',

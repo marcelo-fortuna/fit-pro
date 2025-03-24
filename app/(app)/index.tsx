@@ -3,6 +3,7 @@ import { Image } from 'react-native';
 import { useTranslation } from '../../utils/i18n';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase';
+import { Loading } from '@/components/Loading';
 
 type UserData = {
   id: string;
@@ -25,7 +26,7 @@ const getGreeting = (hour: number): string => {
 export default function Home() {
   const { t } = useTranslation();
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [greeting, setGreeting] = useState(() => {
     const currentHour = new Date().getHours();
     return getGreeting(currentHour);
@@ -46,6 +47,7 @@ export default function Home() {
   }, []);
 
   const fetchUserData = async () => {
+    setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
@@ -66,39 +68,45 @@ export default function Home() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>{t(`screens.home.${greeting}`)}, {userData?.first_name}</Text>
-        <Text style={styles.title}>{t('screens.home.practice')}</Text>
-      </View>
-
-      <View style={styles.todayWorkout}>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
-          style={styles.workoutImage}
-        />
-        <View style={styles.workoutInfo}>
-          <Text style={styles.workoutTitle}>Today's Workout</Text>
-          <Text style={styles.workoutDuration}>45 min • Intermediate</Text>
+    <>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>{t(`screens.home.${greeting}`)}, {userData?.first_name}</Text>
+          <Text style={styles.title}>{t('screens.home.practice')}</Text>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Featured Programs</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.programsList}>
-          {[1, 2, 3].map((item) => (
-            <View key={item} style={styles.programCard}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
-                style={styles.programImage}
-              />
-              <Text style={styles.programTitle}>Core Strength</Text>
-              <Text style={styles.programDuration}>8 weeks</Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-    </ScrollView>
+        <View style={styles.todayWorkout}>
+          <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
+            style={styles.workoutImage}
+          />
+          <View style={styles.workoutInfo}>
+            <Text style={styles.workoutTitle}>Today's Workout</Text>
+            <Text style={styles.workoutDuration}>45 min • Intermediate</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Featured Programs</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.programsList}>
+            {[1, 2, 3].map((item) => (
+              <View key={item} style={styles.programCard}>
+                <Image
+                  source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800' }}
+                  style={styles.programImage}
+                />
+                <Text style={styles.programTitle}>Core Strength</Text>
+                <Text style={styles.programDuration}>8 weeks</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </ScrollView>
+      <Loading
+        visible={loading}
+        message={t('screens.loading')}
+      />
+    </>
   );
 }
 

@@ -54,6 +54,7 @@ const i18n = new I18n({
       profile: 'Profile',
     },
     screens: {
+      loading: 'Loading...',
       home: {
         morning: 'Good morning',
         afternoon: 'Good afternoon',
@@ -140,6 +141,7 @@ const i18n = new I18n({
       profile: 'Perfil',
     },
     screens: {
+      loading: 'Carregando...',
       home: {
         morning: 'Bom dia',
         afternoon: 'Boa tarde',
@@ -261,6 +263,7 @@ const i18n = new I18n({
       profile: 'Perfil',
     },
     screens: {
+      loading: 'Cargando...',
       home: {
         morning: 'Buenos días',
         afternoon: 'Buenas tardes',

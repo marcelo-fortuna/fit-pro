@@ -6,6 +6,7 @@ import { supabase } from '../../utils/supabase';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '../../utils/i18n';
 import * as ImagePicker from 'expo-image-picker';
+import { Loading } from '../../components/Loading';
 
 type UserProfile = {
   id: string;
@@ -137,115 +138,123 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
+      <Loading
+        visible={true}
+        message={t('screens.loading')}
+      />
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('screens.profile.title')}</Text>
-      </View>
-
-      <View style={styles.profile}>
-        <Pressable
-          onPress={() => setShowImageOptions(true)}
-          style={styles.avatarContainer}
-        >
-          <Image
-            source={{
-              uri: userProfile?.profile_image_url ||
-                'https://cdna.artstation.com/p/assets/images/images/084/124/300/large/matthew-blank-profile-photo-3.jpg',
-            }}
-            style={styles.avatar}
-          />
-          <View style={styles.editOverlay}>
-            <Ionicons name="camera" size={24} color="white" />
-          </View>
-        </Pressable>
-        <Text style={styles.name}>
-          {userProfile?.first_name} {userProfile?.last_name}
-        </Text>
-        <Text style={styles.email}>{userProfile?.email}</Text>
-        {userProfile?.birth_date && (
-          <Text style={styles.age}>
-            {calculateAge(userProfile.birth_date)} {t('screens.profile.yearsOld')}
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.subscription}>
-        <Text style={styles.subscriptionTitle}>{t('screens.profile.currentPlan')}</Text>
-        <View style={styles.planCard}>
-          <View style={styles.planInfo}>
-            <Text style={styles.planName}>{t('screens.profile.premiumMonthly')}</Text>
-            <Text style={styles.planPrice}>$19.99/month</Text>
-          </View>
-          <Text style={styles.planExpiry}>
-            {t('screens.profile.expiresOn')}{' '}
-            {userProfile?.subscription_end_date
-              ? new Date(userProfile.subscription_end_date).toLocaleDateString()
-              : 'N/A'}
-          </Text>
+    <>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{t('screens.profile.title')}</Text>
         </View>
-      </View>
 
-      <View style={styles.menu}>
-        <Pressable style={styles.menuItem}>
-          <Ionicons name='settings-outline' size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('screens.profile.settings')}</Text>
-          <Ionicons name="chevron-forward" size={24} color="#64748b" />
-        </Pressable>
+        <View style={styles.profile}>
+          <Pressable
+            onPress={() => setShowImageOptions(true)}
+            style={styles.avatarContainer}
+          >
+            <Image
+              source={{
+                uri: userProfile?.profile_image_url ||
+                  'https://cdna.artstation.com/p/assets/images/images/084/124/300/large/matthew-blank-profile-photo-3.jpg',
+              }}
+              style={styles.avatar}
+            />
+            <View style={styles.editOverlay}>
+              <Ionicons name="camera" size={24} color="white" />
+            </View>
+          </Pressable>
+          <Text style={styles.name}>
+            {userProfile?.first_name} {userProfile?.last_name}
+          </Text>
+          <Text style={styles.email}>{userProfile?.email}</Text>
+          {userProfile?.birth_date && (
+            <Text style={styles.age}>
+              {calculateAge(userProfile.birth_date)} {t('screens.profile.yearsOld')}
+            </Text>
+          )}
+        </View>
 
-        <Pressable style={styles.menuItem}>
-          <Ionicons name="card-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('screens.profile.paymentMethods')}</Text>
-          <Ionicons name="chevron-forward" size={24} color="#64748b" />
-        </Pressable>
-
-        <Pressable style={styles.menuItem}>
-          <Ionicons name="help-circle-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('screens.profile.helpSupport')}</Text>
-          <Ionicons name="chevron-forward" size={24} color="#64748b" />
-        </Pressable>
-      </View>
-
-      <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>{t('screens.profile.logout')}</Text>
-      </Pressable>
-
-      <Modal
-        visible={showImageOptions}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowImageOptions(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowImageOptions(false)}
-        >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('screens.profile.updatePhoto')}</Text>
-            <Pressable
-              style={styles.modalOption}
-              onPress={() => handleImagePick(false)}
-            >
-              <Ionicons name="images-outline" size={24} color="#0f172a" />
-              <Text style={styles.modalOptionText}>{t('screens.profile.chooseFromGallery')}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalOption}
-              onPress={() => handleImagePick(true)}
-            >
-              <Ionicons name="camera-outline" size={24} color="#0f172a" />
-              <Text style={styles.modalOptionText}>{t('screens.profile.takePhoto')}</Text>
-            </Pressable>
+        <View style={styles.subscription}>
+          <Text style={styles.subscriptionTitle}>{t('screens.profile.currentPlan')}</Text>
+          <View style={styles.planCard}>
+            <View style={styles.planInfo}>
+              <Text style={styles.planName}>{t('screens.profile.premiumMonthly')}</Text>
+              <Text style={styles.planPrice}>$19.99/month</Text>
+            </View>
+            <Text style={styles.planExpiry}>
+              {t('screens.profile.expiresOn')}{' '}
+              {userProfile?.subscription_end_date
+                ? new Date(userProfile.subscription_end_date).toLocaleDateString()
+                : 'N/A'}
+            </Text>
           </View>
+        </View>
+
+        <View style={styles.menu}>
+          <Pressable style={styles.menuItem}>
+            <Ionicons name='settings-outline' size={24} color="#0f172a" />
+            <Text style={styles.menuText}>{t('screens.profile.settings')}</Text>
+            <Ionicons name="chevron-forward" size={24} color="#64748b" />
+          </Pressable>
+
+          <Pressable style={styles.menuItem}>
+            <Ionicons name="card-outline" size={24} color="#0f172a" />
+            <Text style={styles.menuText}>{t('screens.profile.paymentMethods')}</Text>
+            <Ionicons name="chevron-forward" size={24} color="#64748b" />
+          </Pressable>
+
+          <Pressable style={styles.menuItem}>
+            <Ionicons name="help-circle-outline" size={24} color="#0f172a" />
+            <Text style={styles.menuText}>{t('screens.profile.helpSupport')}</Text>
+            <Ionicons name="chevron-forward" size={24} color="#64748b" />
+          </Pressable>
+        </View>
+
+        <Pressable style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>{t('screens.profile.logout')}</Text>
         </Pressable>
-      </Modal>
-    </ScrollView>
+
+        <Modal
+          visible={showImageOptions}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowImageOptions(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setShowImageOptions(false)}
+          >
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{t('screens.profile.updatePhoto')}</Text>
+              <Pressable
+                style={styles.modalOption}
+                onPress={() => handleImagePick(false)}
+              >
+                <Ionicons name="images-outline" size={24} color="#0f172a" />
+                <Text style={styles.modalOptionText}>{t('screens.profile.chooseFromGallery')}</Text>
+              </Pressable>
+              <Pressable
+                style={styles.modalOption}
+                onPress={() => handleImagePick(true)}
+              >
+                <Ionicons name="camera-outline" size={24} color="#0f172a" />
+                <Text style={styles.modalOptionText}>{t('screens.profile.takePhoto')}</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Modal>
+      </ScrollView>
+
+      <Loading
+        visible={uploadingImage}
+        message={t('screens.loading')}
+      />
+    </>
   );
 }
 
