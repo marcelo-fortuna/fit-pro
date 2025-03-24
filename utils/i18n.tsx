@@ -1,3 +1,4 @@
+import React, { createContext, useContext, useState } from 'react';
 import { I18n } from 'i18n-js';
 import { getLocales } from 'expo-localization';
 
@@ -8,7 +9,9 @@ const i18n = new I18n({
       registerFailed: 'Failed to Create Account.',
     },
     validations: {
+      required: 'This field is required',
       fillAllFields: 'Please fill all fields.',
+      invalidDate: 'Please enter a valid date',
       emailValid: 'Please enter a valid email.',
       notExpectedCharPassword: 'Password must be at least 6 characters.',
     },
@@ -41,7 +44,7 @@ const i18n = new I18n({
       subtitle: 'We need some more information to personalize your experience on the app.',
       firstName: 'First Name',
       lastName: 'Last Name',
-      birthDate: 'Date of Birth (DD/MM/YYYY)',
+      birthDate: 'Date of Birth',
       completeRegister: 'Complete registration',
       savingCompleteRegister: 'Saving...',
     },
@@ -79,7 +82,9 @@ const i18n = new I18n({
       registerFailed: 'Falha ao criar conta.',
     },
     validations: {
+      required: 'Este campo é obrigatório',
       fillAllFields: 'Por favor, preencha todos os campos.',
+      invalidDate: 'Por favor, insira uma data válida',
       emailValid: 'Por favor, insira um e-mail válido.',
       notExpectedCharPassword: 'A senha deve ter pelo menos 6 caracteres.',
     },
@@ -112,7 +117,7 @@ const i18n = new I18n({
       subtitle: 'Precisamos de mais algumas informações para personalizar sua experiência no aplicativo.',
       firstName: 'Nome',
       lastName: 'Sobrenome',
-      birthDate: 'Data de Nascimento (DD/MM/AAAA)',
+      birthDate: 'Data de Nascimento',
       completeRegister: 'Concluir cadastro',
       savingCompleteRegister: 'Salvando...',
     },
@@ -185,8 +190,10 @@ const i18n = new I18n({
       registerFailed: 'Error al Crear la cuenta.',
     },
     validations: {
+      required: 'Este campo es obligatorio',
       fillAllFields: 'Por favor, rellene todos los campos.',
       emailValid: 'Por favor, introduzca un correo electrónico válido.',
+      invalidDate: 'Por favor, ingrese una fecha válida',
       notExpectedCharPassword: 'La contraseña debe tener al menos 6 caracteres.',
     },
     welcome: {
@@ -215,10 +222,10 @@ const i18n = new I18n({
     },
     completeProfile: {
       title: 'Completa tu perfil',
-      subtitle: 'Necesitamos más información para personalizar su experiencia en la aplicación.',
+      subtitle: 'Necesitamos más información para personalizar tu experiencia en la aplicación.',
       firstName: 'Nombre',
       lastName: 'Apellido',
-      birthDate: 'Fecha de Nacimiento (DD/MM/AAAA)',
+      birthDate: 'Fecha de Nacimiento',
       completeRegister: 'Completar registro',
       savingCompleteRegister: 'Guardando...',
     },
@@ -252,19 +259,45 @@ const i18n = new I18n({
   },
 });
 
-export function setupI18n() {
-  const locales = getLocales();
-  i18n.locale = locales[0].languageCode;
-  i18n.enableFallback = true;
-  i18n.defaultLocale = 'en';
+const locales = getLocales();
+i18n.locale = locales[0].languageCode;
+i18n.enableFallback = true;
+i18n.defaultLocale = 'en';
+
+// Criação do contexto
+interface LanguageContextData {
+  locale: string;
+  setLocale: (locale: string) => void;
 }
 
+const LanguageContext = createContext<LanguageContextData>({
+  locale: i18n.locale,
+  setLocale: () => { },
+});
+
+// Provedor de idioma
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocaleState] = useState(i18n.locale);
+
+  const changeLocale = (newLocale: string) => {
+    // Atualiza o i18n e o estado simultaneamente
+    i18n.locale = newLocale;
+    setLocaleState(newLocale);
+  };
+
+  return (
+    <LanguageContext.Provider value={{ locale, setLocale: changeLocale }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+// Hook para acessar a tradução
 export function useTranslation() {
+  const { locale, setLocale } = useContext(LanguageContext);
   return {
     t: (key: string, params?: Record<string, string>) => i18n.t(key, params),
-    locale: i18n.locale,
-    setLocale: (locale: string) => {
-      i18n.locale = locale;
-    },
+    locale,
+    setLocale,
   };
 }

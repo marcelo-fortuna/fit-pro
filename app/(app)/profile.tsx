@@ -116,7 +116,7 @@ export default function Profile() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      router.replace('/');
+      router.replace('/(auth)');
     } catch (err) {
       Alert.alert('Error', 'Failed to log out');
     }
@@ -166,7 +166,7 @@ export default function Profile() {
           </View>
         </Pressable>
         <Text style={styles.name}>
-          {userProfile?.first_name}{userProfile?.last_name}
+          {userProfile?.first_name} {userProfile?.last_name}
         </Text>
         <Text style={styles.email}>{userProfile?.email}</Text>
         {userProfile?.birth_date && (

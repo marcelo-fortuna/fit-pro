@@ -4,18 +4,9 @@ import { useTranslation } from '../utils/i18n';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const flags = {
-  en: {
-    flag: 'https://flagcdn.com/w160/us.png',
-    label: 'English',
-  },
-  pt: {
-    flag: 'https://flagcdn.com/w160/br.png',
-    label: 'Português',
-  },
-  es: {
-    flag: 'https://flagcdn.com/w160/es.png',
-    label: 'Español',
-  },
+  en: { flag: 'https://flagcdn.com/w160/us.png', label: 'English' },
+  pt: { flag: 'https://flagcdn.com/w160/br.png', label: 'Português' },
+  es: { flag: 'https://flagcdn.com/w160/es.png', label: 'Español' },
 };
 
 export function LanguageSwitcher() {
@@ -24,45 +15,26 @@ export function LanguageSwitcher() {
 
   return (
     <>
-      <Pressable
-        onPress={() => setModalVisible(true)}
-        style={styles.currentLanguage}
-      >
-        <Image
-          source={{ uri: flags[locale as keyof typeof flags].flag }}
-          style={styles.flagImage}
-        />
+      <Pressable onPress={() => setModalVisible(true)} style={styles.currentLanguage}>
+        <Image source={{ uri: flags[locale as keyof typeof flags].flag }} style={styles.flagImage} />
       </Pressable>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setModalVisible(false)}
-        >
+      <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Select Language</Text>
             {Object.entries(flags).map(([lang, { flag, label }]) => (
               <Pressable
                 key={lang}
-                style={[
-                  styles.languageOption,
-                  locale === lang && styles.activeOption,
-                ]}
+                style={[styles.languageOption, locale === lang && styles.activeOption]}
                 onPress={() => {
-                  setLocale(lang);
+                  setLocale(lang); // Atualiza o idioma imediatamente
                   setModalVisible(false);
                 }}
               >
                 <Image source={{ uri: flag }} style={styles.flagImage} />
                 <Text style={styles.languageLabel}>{label}</Text>
-                {locale === lang && (
-                  <FA5Icon name="check-circle" size={20} color="#78b13f" />
-                )}
+                {locale === lang && <FA5Icon name="check-circle" size={20} color="#78b13f" />}
               </Pressable>
             ))}
           </View>

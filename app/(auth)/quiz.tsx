@@ -21,7 +21,7 @@ export default function Quiz() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const questions = Object.keys(t('quiz.questions', { returnObjects: true })); // Obtém todas as chaves das perguntas
+  const questions = Object.keys(t('quiz.questions')); // Obtém todas as chaves das perguntas
   const totalQuestions = questions.length;
 
   const handleAnswer = (answer: string) => {
@@ -84,7 +84,7 @@ export default function Quiz() {
 
       // Redirecionar para completar perfil
       router.replace({
-        pathname: '/complete-profile',
+        pathname: '../complete-profile',
         params: { userId: authData.user.id },
       });
     } catch (error) {
@@ -124,9 +124,7 @@ export default function Quiz() {
           </Text>
 
           <View style={styles.optionsContainer}>
-            {t(`quiz.questions.${questions[currentQuestion]}.options`, {
-              returnObjects: true,
-            }).map((option: string) => (
+            {t(`quiz.questions.${questions[currentQuestion]}.options`).map((option: string) => (
               <Pressable
                 key={option}
                 style={styles.optionButton}
