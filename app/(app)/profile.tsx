@@ -146,7 +146,7 @@ export default function Profile() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('profile.title')}</Text>
+        <Text style={styles.title}>{t('screens.profile.title')}</Text>
       </View>
 
       <View style={styles.profile}>
@@ -171,20 +171,20 @@ export default function Profile() {
         <Text style={styles.email}>{userProfile?.email}</Text>
         {userProfile?.birth_date && (
           <Text style={styles.age}>
-            {calculateAge(userProfile.birth_date)} {t('profile.yearsOld')}
+            {calculateAge(userProfile.birth_date)} {t('screens.profile.yearsOld')}
           </Text>
         )}
       </View>
 
       <View style={styles.subscription}>
-        <Text style={styles.subscriptionTitle}>{t('profile.currentPlan')}</Text>
+        <Text style={styles.subscriptionTitle}>{t('screens.profile.currentPlan')}</Text>
         <View style={styles.planCard}>
           <View style={styles.planInfo}>
-            <Text style={styles.planName}>{t('profile.premiumMonthly')}</Text>
+            <Text style={styles.planName}>{t('screens.profile.premiumMonthly')}</Text>
             <Text style={styles.planPrice}>$19.99/month</Text>
           </View>
           <Text style={styles.planExpiry}>
-            {t('profile.expiresOn')}{' '}
+            {t('screens.profile.expiresOn')}{' '}
             {userProfile?.subscription_end_date
               ? new Date(userProfile.subscription_end_date).toLocaleDateString()
               : 'N/A'}
@@ -195,25 +195,25 @@ export default function Profile() {
       <View style={styles.menu}>
         <Pressable style={styles.menuItem}>
           <Ionicons name='settings-outline' size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('profile.settings')}</Text>
+          <Text style={styles.menuText}>{t('screens.profile.settings')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
         <Pressable style={styles.menuItem}>
           <Ionicons name="card-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('profile.paymentMethods')}</Text>
+          <Text style={styles.menuText}>{t('screens.profile.paymentMethods')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
 
         <Pressable style={styles.menuItem}>
           <Ionicons name="help-circle-outline" size={24} color="#0f172a" />
-          <Text style={styles.menuText}>{t('profile.helpSupport')}</Text>
+          <Text style={styles.menuText}>{t('screens.profile.helpSupport')}</Text>
           <Ionicons name="chevron-forward" size={24} color="#64748b" />
         </Pressable>
       </View>
 
       <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>{t('profile.logout')}</Text>
+        <Text style={styles.logoutText}>{t('screens.profile.logout')}</Text>
       </Pressable>
 
       <Modal
@@ -227,20 +227,20 @@ export default function Profile() {
           onPress={() => setShowImageOptions(false)}
         >
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('profile.updatePhoto')}</Text>
+            <Text style={styles.modalTitle}>{t('screens.profile.updatePhoto')}</Text>
             <Pressable
               style={styles.modalOption}
               onPress={() => handleImagePick(false)}
             >
               <Ionicons name="images-outline" size={24} color="#0f172a" />
-              <Text style={styles.modalOptionText}>{t('profile.chooseFromGallery')}</Text>
+              <Text style={styles.modalOptionText}>{t('screens.profile.chooseFromGallery')}</Text>
             </Pressable>
             <Pressable
               style={styles.modalOption}
               onPress={() => handleImagePick(true)}
             >
               <Ionicons name="camera-outline" size={24} color="#0f172a" />
-              <Text style={styles.modalOptionText}>{t('profile.takePhoto')}</Text>
+              <Text style={styles.modalOptionText}>{t('screens.profile.takePhoto')}</Text>
             </Pressable>
           </View>
         </Pressable>

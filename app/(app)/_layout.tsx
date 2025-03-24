@@ -5,8 +5,10 @@ import { router } from 'expo-router';
 import { supabase } from '../../utils/supabase';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { View } from 'react-native';
+import { useTranslation } from '@/utils/i18n';
 
 export default function AppLayout() {
+  const { t } = useTranslation();
   useEffect(() => {
     // Check if user is authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,7 +37,7 @@ export default function AppLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t(`tabs.home`),
           tabBarIcon: ({ size, color }) => (
             <Icon name="home" size={size} color={color} />
           ),
@@ -44,7 +46,7 @@ export default function AppLayout() {
       <Tabs.Screen
         name="exercises"
         options={{
-          title: 'Exercises',
+          title: t(`tabs.exercises`),
           tabBarIcon: ({ size, color }) => (
             <Icon name="fitness" size={size} color={color} />
           ),
@@ -53,7 +55,7 @@ export default function AppLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t(`tabs.profile`),
           tabBarIcon: ({ size, color }) => (
             <Icon name="person" size={size} color={color} />
           ),

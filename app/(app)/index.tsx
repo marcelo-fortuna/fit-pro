@@ -1,15 +1,75 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Image } from 'react-native';
 import { useTranslation } from '../../utils/i18n';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/utils/supabase';
+
+type UserData = {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  birth_date: string | null;
+  subscription_status: string;
+  subscription_end_date: string | null;
+  profile_image_url: string | null;
+};
+
+// Função para determinar a saudação com base na hora
+const getGreeting = (hour: number): string => {
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 18) return 'afternoon';
+  return 'evening';
+};
 
 export default function Home() {
   const { t } = useTranslation();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState(() => {
+    const currentHour = new Date().getHours();
+    return getGreeting(currentHour);
+  });
+
+  useEffect(() => {
+    fetchUserData();
+    // Atualiza a saudação periodicamente
+    const interval = setInterval(() => {
+      const currentHour = new Date().getHours();
+      setGreeting(prev => {
+        const newGreeting = getGreeting(currentHour);
+        return newGreeting !== prev ? newGreeting : prev;
+      });
+    }, 60000); // Verifica a cada minuto
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setUserData(profile);
+    } catch (err) {
+      console.error('Error fetching User Data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Good morning, Sarah</Text>
-        <Text style={styles.title}>Ready for your practice?</Text>
+        <Text style={styles.greeting}>{t(`screens.home.${greeting}`)}, {userData?.first_name}</Text>
+        <Text style={styles.title}>{t('screens.home.practice')}</Text>
       </View>
 
       <View style={styles.todayWorkout}>

@@ -84,7 +84,7 @@ export default function Quiz() {
 
       // Redirecionar para completar perfil
       router.replace({
-        pathname: '../complete-profile',
+        pathname: '/complete-profile',
         params: { userId: authData.user.id },
       });
     } catch (error) {
