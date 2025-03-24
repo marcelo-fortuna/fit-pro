@@ -114,12 +114,15 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       router.replace('/(auth)');
     } catch (err) {
       Alert.alert('Error', 'Failed to log out');
+    } finally {
+      setLoading(false);
     }
   };
 
